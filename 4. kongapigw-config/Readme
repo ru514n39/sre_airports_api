@@ -1,0 +1,58 @@
+Here's a sample README.md file for the configuration provided:
+Kong API Gateway Configuration
+
+This repository contains the configuration for managing multiple services via Kong API Gateway. It includes traffic splitting between different API versions, updating airport images, health check monitoring, and Prometheus integration for monitoring.
+Services
+1. Airports Service
+
+    URL: https://api-ariport.example.com/airports
+    Route: /airports
+
+    Strip Path: Yes
+
+2. Airports V2 Service
+
+    URL: https://api-ariport.example.com/airports_v2
+    Route: /airports_v2
+    Strip Path: Yes
+
+3. Update Airport Image Service
+
+    URL: https://api-ariport.example.com/update_airport_image
+    Route: /update_airport_image
+    Strip Path: No
+
+4. Health Check Service
+
+    URL: https://api-ariport.example.com/healthcheck
+    Route: /healthcheck
+    Strip Path: No
+
+Plugins
+Traffic Split Plugin
+
+    Service: airports-service
+    Rules:
+        80% traffic to airports-service
+        20% traffic to airports-v2-service
+
+Prometheus Plugin
+
+    Config: Enabled latency metrics to monitor API performance.
+
+Prometheus Configuration
+
+To monitor Kong's metrics, use the following Prometheus configuration:
+
+yaml
+
+scrape_configs:
+  - job_name: 'kong'
+    static_configs:
+      - targets: ['localhost:8001']
+
+How to Use
+
+    Deploy Kong API Gateway: Ensure Kong is deployed and accessible.
+    Enable Prometheus: Ensure Prometheus is scraping metrics from the Kong admin endpoint (/metrics).
+    Monitor API Performance: Access metrics via Prometheus to track request counts, response times, and error rates for each service.

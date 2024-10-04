@@ -1,0 +1,29 @@
+name: app deployment flows
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  AppBuild:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: 1.23.1
+    - name: before execution
+      run: |
+        go get github.com/aws/aws-sdk-go/aws
+        go get github.com/aws/aws-sdk-go/aws/session
+        go get github.com/aws/aws-sdk-go/service/s3     
+    - name: execution
+      env:
+        DOCKER_USER: ${{secrets.DOCKER_USER}}
+        DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+      run: |
+        export IMAGE_TAG="0.0.${{ github.run_id }}-prod"
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        docker build . --file app.dockerfile --tag kylo39/doom:$IMAGE_TAG
+        docker image ls
+        docker image push kylo39/doom:$IMAGE_TAG

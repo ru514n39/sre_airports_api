@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: airport-app-service
+  labels:
+    app: airport-app
+spec:
+  type: LoadBalancer  # Can be ClusterIP (internal access), NodePort, or LoadBalancer (external access)
+  ports:
+    - port: 80        # Expose on port 80 (externally)
+      targetPort: 8080  # Redirect traffic to port 8080 inside the container
+      protocol: TCP
+  selector:
+    app: airport-app       # This should match the app label in the deployment

@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: airport-app-deployment   # Name of your deployment
+  labels:
+    app: airport-app
+spec:
+  replicas: 3               # Number of pod replicas
+  selector:
+    matchLabels:
+      app: airport-app
+  template:
+    metadata:
+      labels:
+        app: airport-app
+    spec:
+      containers:
+        - name: airport-app-container  # Name of your container
+          image: "{{ .Values.image.name }}:{{ .Values.image.tag }}"
+          ports:
+            - containerPort: 8080    # Replace with the port your app listens on
+          resources:                 
+            requests:
+              memory: "128Mi"
+              cpu: "500m"
+            limits:
+              memory: "256Mi"
+              cpu: "1"
+          readinessProbe:            # Optional: health check for readiness
+            httpGet:
+              path: /healthcheck     # Adjust according to your health check endpoint
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:             # Optional: health check for liveness
+            httpGet:
+              path: /healthcheck
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 20
